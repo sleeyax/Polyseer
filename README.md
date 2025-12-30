@@ -1,6 +1,6 @@
 # Polyseer - See the Future.
 
-## 👉 **Just Use the Hosted Version: [polyseer.xyz](https://polyseer.xyz)** 👈
+## AI Deepresearch for prediction markets: [polyseer.xyz](https://polyseer.xyz)**
 
 Seriously, unless you're a developer who wants to modify the code, just use the hosted version. It's free, already set up, and works immediately. No setup required.
 
