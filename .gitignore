@@ -43,3 +43,6 @@ next-env.d.ts
 
 mds/
 docs/
+
+# Local development database
+.local-data/
