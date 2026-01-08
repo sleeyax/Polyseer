@@ -1,11 +1,11 @@
 /**
- * Unified database interface that switches between Supabase (production)
- * and SQLite (development) based on NEXT_PUBLIC_APP_MODE
+ * Unified database interface that switches between Supabase (valyu mode)
+ * and SQLite (self-hosted mode) based on NEXT_PUBLIC_APP_MODE
  */
 
 import { createClient as createSupabaseClient } from "@/utils/supabase/server";
 import { getLocalDb, DEV_USER_ID } from "./local-db/client";
-import { getDevUser, isDevelopmentMode } from "./local-db/local-auth";
+import { getDevUser, isSelfHostedMode } from "./local-db/local-auth";
 import { eq, desc, and } from "drizzle-orm";
 import * as schema from "./local-db/schema";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 // ============================================================================
 
 export async function getUser() {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     return { data: { user: getDevUser() }, error: null };
   }
 
@@ -24,7 +24,7 @@ export async function getUser() {
 }
 
 export async function getSession() {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     return {
       data: {
         session: {
@@ -45,7 +45,7 @@ export async function getSession() {
 // ============================================================================
 
 export async function getUserById(userId: string) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const user = await db.query.users.findFirst({
       where: eq(schema.users.id, userId),
@@ -72,7 +72,7 @@ export async function upsertUser(userData: {
   valyu_organisation_id?: string;
   valyu_organisation_name?: string;
 }) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const existing = await db.query.users.findFirst({
       where: eq(schema.users.id, userData.id),
@@ -151,7 +151,7 @@ export async function createAnalysisSession(
 ): Promise<{ data: { id: string } | null; error: any }> {
   const sessionId = uuidv4();
 
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     await db.insert(schema.analysisSessions).values({
       id: sessionId,
@@ -189,7 +189,7 @@ export async function updateAnalysisSession(
   sessionId: string,
   updates: Partial<AnalysisSessionData>
 ) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const dbUpdates: Partial<schema.InsertAnalysisSession> = {
       updatedAt: new Date(),
@@ -251,7 +251,7 @@ export async function updateAnalysisSession(
 }
 
 export async function getAnalysisHistory(userId: string) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const sessions = await db.query.analysisSessions.findMany({
       where: and(
@@ -314,7 +314,7 @@ export async function getAnalysisHistory(userId: string) {
 }
 
 export async function getAnalysisById(analysisId: string, userId: string) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const session = await db.query.analysisSessions.findFirst({
       where: and(
@@ -372,7 +372,7 @@ export async function getAnalysisById(analysisId: string, userId: string) {
 }
 
 export async function deleteAnalysisSession(analysisId: string, userId: string) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     await db
       .delete(schema.analysisSessions)
@@ -400,7 +400,7 @@ export async function deleteAnalysisSession(analysisId: string, userId: string) 
 // ============================================================================
 
 export async function getFeaturedMarkets() {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
     const markets = await db.query.featuredMarkets.findMany({
       where: eq(schema.featuredMarkets.isActive, true),
@@ -454,7 +454,7 @@ export async function updateFeaturedMarkets(
     is_active: boolean;
   }>
 ) {
-  if (isDevelopmentMode()) {
+  if (isSelfHostedMode()) {
     const db = getLocalDb();
 
     // Delete all existing featured markets
@@ -499,4 +499,4 @@ export async function updateFeaturedMarkets(
 // DEV MODE HELPERS
 // ============================================================================
 
-export { isDevelopmentMode, DEV_USER_ID };
+export { isSelfHostedMode, DEV_USER_ID };

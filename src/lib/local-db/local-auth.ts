@@ -19,7 +19,7 @@ export function getDevSession(): LocalAuthSession {
   };
 }
 
-// Mock auth user for development mode
+// Mock auth user for self-hosted mode
 export function getDevUser() {
   return {
     id: DEV_USER_ID,
@@ -27,7 +27,7 @@ export function getDevUser() {
   };
 }
 
-// Check if we're in development mode
-export function isDevelopmentMode(): boolean {
-  return process.env.NEXT_PUBLIC_APP_MODE === "development";
+// Check if we're in self-hosted mode
+export function isSelfHostedMode(): boolean {
+  return process.env.NEXT_PUBLIC_APP_MODE === "self-hosted";
 }

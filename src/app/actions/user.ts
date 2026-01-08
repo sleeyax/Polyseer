@@ -1,11 +1,11 @@
 'use server'
 
-import { getUserById, isDevelopmentMode, DEV_USER_ID } from '@/lib/db'
+import { getUserById, isSelfHostedMode, DEV_USER_ID } from '@/lib/db'
 
 export async function getUserData(userId: string) {
   try {
-    // In dev mode, if requesting dev user, return mock data
-    if (isDevelopmentMode() && userId === DEV_USER_ID) {
+    // In self-hosted mode, if requesting dev user, return mock data
+    if (isSelfHostedMode() && userId === DEV_USER_ID) {
       return {
         id: DEV_USER_ID,
         email: 'dev@localhost',

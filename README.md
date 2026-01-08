@@ -4,7 +4,9 @@
 
 **NOT FINANCIAL ADVICE** | Polyseer provides analysis for entertainment and research purposes only. Always DYOR.
 
-## Tldr;
+## Quick Start (Self-Hosted)
+
+The easiest way to run Polyseer is in self-hosted mode with just 3 environment variables:
 
 ```bash
 git clone https://github.com/yorkeccak/polyseer.git
@@ -12,15 +14,20 @@ cd polyseer
 npm install
 
 # Create .env.local with:
-# OPENAI_API_KEY=sk-... # Get from platform.openai.com
-# + Valyu OAuth credentials (see below)
+# NEXT_PUBLIC_APP_MODE=self-hosted
+# VALYU_API_KEY=valyu_xxx        # Get from platform.valyu.ai
+# OPENAI_API_KEY=sk-xxx          # Get from platform.openai.com
 
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000), sign in with Valyu, paste any **Polymarket or Kalshi** URL, and get your analysis.
+Open [localhost:3000](http://localhost:3000), paste any **Polymarket or Kalshi** URL, and get your analysis.
 
-Or, we have a hosted version [here](https://www.polyseer.xyz)
+Self-hosted mode features:
+- No authentication required
+- Local SQLite database (automatically created)
+- Unlimited queries using your API keys
+- Perfect for personal use and development
 
 ## What is Polyseer?
 
@@ -116,14 +123,12 @@ sequenceDiagram
 
 ### Valyu Integration
 
-Polyseer uses **Sign in with Valyu** for authentication and search API access. Valyu is the information backbone of Polyseer, providing access to:
+Polyseer uses the Valyu API for its research capabilities, providing access to:
 
 - **Academic Papers**: Real-time research publications
 - **Web Intelligence**: Fresh news and analysis
 - **Market Data**: Financial and trading information
 - **Proprietary Datasets**: Exclusive Valyu intelligence
-
-All API costs are charged to your Valyu organization credits via OAuth proxy. **New accounts get $10 in free credits.**
 
 ```mermaid
 graph LR
@@ -186,7 +191,7 @@ graph TD
 
 **Key Formulas:**
 - **Log Likelihood Ratio**: `LLR = log(P(evidence|YES) / P(evidence|NO))`
-- **Probability Update**: `p_new = p_old × exp(LLR)`
+- **Probability Update**: `p_new = p_old * exp(LLR)`
 - **Correlation Adjustment**: Accounts for evidence clustering and dependencies
 
 ### Evidence Influence Calculation
@@ -209,21 +214,19 @@ Each piece of evidence receives an influence score based on:
 ### Backend & APIs
 - **AI SDK** - LLM orchestration
 - **GPT-5** - Advanced reasoning model
-- **Valyu OAuth** - Authentication & search API access
+- **Valyu API** - Search and research capabilities
 - **Polymarket API** - Market data fetching
 - **Kalshi API** - Market data fetching
-- **Supabase** - Database and session management
+- **SQLite/Supabase** - Database (mode-dependent)
 
 ### State Management
 - **Zustand** - Simple state management
 - **TanStack Query** - Server state synchronization
-- **Supabase SSR** - Server-side authentication
 
 ### Infrastructure
 - **TypeScript** - Type safety throughout
 - **Zod** - Runtime type validation
 - **ESLint** - Code quality
-- **Vercel** - Deployment platform
 
 ---
 
@@ -234,8 +237,7 @@ Each piece of evidence receives an influence score based on:
 - **Node.js 18+**
 - **npm/pnpm/yarn**
 - **OpenAI API key** - For GPT-5 access
-- **Valyu OAuth credentials** - Get from [platform.valyu.ai](https://platform.valyu.ai)
-- **Supabase account** - For database and session management
+- **Valyu API key** - For search capabilities (get at [platform.valyu.ai](https://platform.valyu.ai))
 
 ### 1. Clone the Repository
 
@@ -254,105 +256,69 @@ pnpm install
 
 ### 3. Environment Setup
 
-Create `.env.local` with the following variables:
+Create `.env.local` with your configuration:
+
+#### Self-Hosted Mode (Recommended)
 
 ```env
 # ===========================================
-# App Configuration
+# Self-Hosted Mode Configuration
 # ===========================================
-NEXT_PUBLIC_APP_MODE=development  # Set to 'production' for production deployment
+NEXT_PUBLIC_APP_MODE=self-hosted
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # ===========================================
-# Valyu OAuth Configuration (Required)
+# Required API Keys
 # ===========================================
-# Get these from Valyu Platform Dashboard: https://platform.valyu.ai
-# Settings -> OAuth Apps -> Create new OAuth App
+# Get your Valyu API key at: https://platform.valyu.ai
+VALYU_API_KEY=valyu_your_api_key_here
 
-NEXT_PUBLIC_VALYU_SUPABASE_URL=https://xxx.supabase.co  # Valyu Platform's Supabase URL
+# Get your OpenAI API key at: https://platform.openai.com
+OPENAI_API_KEY=sk-your_openai_api_key_here
+```
+
+That's it! Self-hosted mode uses a local SQLite database that's automatically created.
+
+#### Valyu Mode (Advanced)
+
+> **Note:** Valyu OAuth apps will be in general availability soon. Currently client id/secret are not publicly available. Contact contact@valyu.ai if you need access.
+
+```env
+# ===========================================
+# Valyu Mode Configuration
+# ===========================================
+NEXT_PUBLIC_APP_MODE=valyu
+NEXT_PUBLIC_APP_URL=https://yourdomain.com
+
+# ===========================================
+# Valyu OAuth Configuration
+# ===========================================
+NEXT_PUBLIC_VALYU_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_VALYU_CLIENT_ID=your-oauth-client-id
-VALYU_CLIENT_SECRET=your-oauth-client-secret  # Server-only! Do not expose to client
-VALYU_APP_URL=https://platform.valyu.ai  # Valyu Platform URL for userinfo endpoint
+VALYU_CLIENT_SECRET=your-oauth-client-secret
+VALYU_APP_URL=https://platform.valyu.ai
 
 # ===========================================
-# App's Own Supabase (Required)
+# App's Own Supabase (Required for Valyu Mode)
 # ===========================================
-# Your app's Supabase project for user data, chat history, etc.
-
 NEXT_PUBLIC_SUPABASE_URL=https://your-app.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-only!
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # ===========================================
-# OpenAI Configuration (Required)
+# Required API Keys
 # ===========================================
-
-OPENAI_API_KEY=your-openai-api-key
-
-# ===========================================
-# Optional Services
-# ===========================================
-
-# Weaviate Memory (optional)
-MEMORY_ENABLED=false
-WEAVIATE_HOST=your-weaviate-host
-WEAVIATE_API_KEY=your-weaviate-api-key
-
-# Kalshi Integration (optional)
-KALSHI_API_KEY=your-kalshi-api-key
-
-# Groq (optional - for faster inference)
-GROQ_API_KEY=your-groq-api-key
+VALYU_API_KEY=valyu_your_api_key_here
+OPENAI_API_KEY=sk-your_openai_api_key_here
 ```
 
-### 4. Database Setup
-
-Set up your Supabase database with the following table:
-
-```sql
--- Users table
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  full_name TEXT,
-  avatar_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Analysis sessions
-CREATE TABLE analysis_sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id),
-  market_url TEXT NOT NULL,
-  market_question TEXT,
-  status TEXT DEFAULT 'pending',
-  started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  completed_at TIMESTAMP WITH TIME ZONE,
-  duration_seconds INTEGER,
-  valyu_cost DECIMAL(10,6),
-  analysis_steps JSONB,
-  forecast_card JSONB,
-  markdown_report TEXT,
-  current_step TEXT,
-  progress_events JSONB,
-  p0 DECIMAL(5,4),
-  p_neutral DECIMAL(5,4),
-  p_aware DECIMAL(5,4),
-  drivers TEXT[],
-  error_message TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-### 5. Start the Development Server
+### 4. Start the Development Server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), sign in with Valyu, and start analyzing.
+Open [http://localhost:3000](http://localhost:3000) and start analyzing.
 
 ---
 
@@ -411,13 +377,11 @@ interface Plan {
 
 ### Data Protection
 - End-to-end encryption for sensitive data
-- Secure session management via Supabase
+- Secure session management
 - Input sanitization for all user data
 - No personal data stored in search queries
 
 ### API Security
-- OAuth 2.1 with PKCE for Valyu authentication
-- CORS policies for secure cross-origin requests
 - Request validation using Zod schemas
 - Audit logging for all API calls
 
@@ -439,22 +403,6 @@ We welcome contributions! Here's how to get started:
 - **ESLint**: Follow the configuration
 - **Prettier**: Auto-formatting on save
 - **Conventional Commits**: Use semantic commit messages
-
----
-
-## Performance & Scalability
-
-### Optimization Strategies
-- Turbopack for fast development builds
-- Edge runtime for serverless function optimization
-- Code splitting for minimal bundle sizes
-- Smart caching for repeated queries
-
-### Monitoring
-- Real-time metrics via Vercel Analytics
-- Error tracking with detailed logging
-- Performance monitoring for all agents
-- Cost tracking for API usage
 
 ---
 
@@ -480,15 +428,14 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## Acknowledgments
 
 ### Powered By
-- **Valyu Network**: Authentication & real-time search API
+- **Valyu Network**: Real-time search API
 - **OpenAI GPT-5**: Advanced reasoning capabilities
 - **Polymarket**: Prediction market data
 - **Kalshi**: Prediction market data
-- **Supabase**: Backend infrastructure
 
 ---
 
-**Ready to see the future? Start analyzing markets at [polyseer.xyz](https://polyseer.xyz)**
+**Ready to see the future? Clone the repo and start analyzing markets locally.**
 
 *Remember: The future belongs to those who can see it coming. Don't miss out again.*
 
@@ -498,6 +445,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
   <img src="public/polyseer.svg" alt="Polyseer" width="200"/>
 
   **See the Future. Don't Miss Out.**
-
-  [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpolyseer%2Fpolyseer)
 </div>

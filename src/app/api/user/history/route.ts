@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUser, isDevelopmentMode, DEV_USER_ID } from '@/lib/db'
+import { getUser, isSelfHostedMode, DEV_USER_ID } from '@/lib/db'
 import { getAnalysisHistory } from '@/lib/analysis-session'
 
 export async function GET(request: NextRequest) {
@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
     const { data: { user } } = await getUser()
 
     if (!user) {
-      // In development mode, use dev user
-      if (isDevelopmentMode()) {
+      // In self-hosted mode, use dev user
+      if (isSelfHostedMode()) {
         const history = await getAnalysisHistory(DEV_USER_ID)
         return NextResponse.json(history || [])
       }
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Failed to fetch history:', error)
 
-    // In development mode, return empty array instead of error
-    if (isDevelopmentMode()) {
-      console.log('[History API] Error in dev mode, returning empty history')
+    // In self-hosted mode, return empty array instead of error
+    if (isSelfHostedMode()) {
+      console.log('[History API] Error in self-hosted mode, returning empty history')
       return NextResponse.json([])
     }
 
