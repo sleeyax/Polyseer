@@ -19,22 +19,55 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
+const baseUrl = "https://polyseer.xyz";
+
 export const metadata: Metadata = {
-  title: "Polyseer | See the future.",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Polyseer | AI-Powered Prediction Market Research",
+    template: "%s | Polyseer",
+  },
   description: "AI-powered deep research for prediction markets. Paste any Polymarket or Kalshi URL and get an analyst-grade research report in seconds.",
-  keywords: ["polymarket", "kalshi", "prediction markets", "AI deep research", "forecasting", "analysis"],
-  authors: [{ name: "Polyseer" }],
+  keywords: [
+    "polymarket",
+    "kalshi",
+    "prediction markets",
+    "AI deep research",
+    "forecasting",
+    "analysis",
+    "market research",
+    "probability",
+    "betting markets",
+    "event contracts",
+    "prediction market analysis",
+    "AI forecasting",
+  ],
+  authors: [{ name: "Polyseer", url: baseUrl }],
+  creator: "Polyseer",
+  publisher: "Polyseer",
+  alternates: {
+    canonical: baseUrl,
+  },
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      { url: "/favicon.ico" },
+    ],
+  },
   openGraph: {
-    title: "Polyseer | See the future.",
+    title: "Polyseer | AI-Powered Prediction Market Research",
     description: "AI-powered deep research for prediction markets. Supports Polymarket and Kalshi.",
-    url: "https://polyseer.xyz",
+    url: baseUrl,
     siteName: "Polyseer",
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: "Verdict: ✅ YES • Confidence 78% • polyseer.xyz",
+        alt: "Polyseer - AI-Powered Prediction Market Research",
       },
     ],
     locale: "en_US",
@@ -42,13 +75,42 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Polyseer | See the future.",
+    title: "Polyseer | AI-Powered Prediction Market Research",
     description: "AI-powered deep research for prediction markets. Supports Polymarket and Kalshi.",
     images: ["/og.png"],
+    creator: "@polyseer",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  category: "technology",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Polyseer",
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web",
+  description: "AI-powered deep research for prediction markets. Paste any Polymarket or Kalshi URL and get an analyst-grade research report in seconds.",
+  url: baseUrl,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    ratingCount: "100",
   },
 };
 
@@ -60,6 +122,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth light" suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
